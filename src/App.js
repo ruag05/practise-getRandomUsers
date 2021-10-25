@@ -9,13 +9,19 @@ const fetchUserData = () => {
     })
 }
 
-function App() {
-  const [counter, setCounter] = useState(0);
-  const [userInfos, setUserInfos] = useState('');
+const getFullName = (userInfo) => {
+  const {name : {first, last}} = userInfo;
+  return `${first} ${last}`;
+}
+
+function App() { 
   const [randomUserDataJSON, setRandomUserDataJSON] = useState();
+  const [randomUserData, setRandomUserData] = useState([]);
 
   useEffect( () => {
       fetchUserData().then(res => {
+        console.log(res.data.results);
+        setRandomUserData(res.data.results);
         setRandomUserDataJSON(JSON.stringify(res, null, 3));  
       })      
     }, []
@@ -26,12 +32,21 @@ function App() {
       <h2>
         Code SandBox
       </h2>
+      <p>
+        {
+          randomUserData.map((userInfo, idx) => ( 
+            <>    
+              <p>{getFullName(userInfo)}</p>
+              <img src = {userInfo.picture.thumbnail}/>
+            </>
+          ))   
+        }     
+      </p>       
       <pre>
-      {
-        randomUserDataJSON
-      }
-      </pre>
-
+        {
+          randomUserDataJSON
+        }
+      </pre>      
     </div>
   );
 }
