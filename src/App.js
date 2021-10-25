@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react';
 import axios from 'axios';
 
-const fetchUserData = () => {
-    return axios.get('https://randomuser.me/api')
+const fetchUserData = (pageNumber) => {
+    return axios.get(`https://randomuser.me/api?page=${pageNumber}`)
     .then(res => {
       //console.log(res);
       return res;
@@ -15,38 +15,39 @@ const getFullName = (userInfo) => {
 }
 
 function App() { 
-  const [randomUserDataJSON, setRandomUserDataJSON] = useState();
   const [randomUserData, setRandomUserData] = useState([]);
+  const [nextPageNumber, setNextPageNumber] = useState(1);
+
+  const fetchNextUser = () => {
+    fetchUserData(nextPageNumber).then((res) => {
+      //console.log(res.data);
+      const newUserData = [
+        ...randomUserData,
+        ...res.data.results,
+      ]
+      setRandomUserData(newUserData);        
+      setNextPageNumber(res.data.info.page + 1);
+    }) 
+  }
 
   useEffect( () => {
-      fetchUserData().then(res => {
-        console.log(res.data.results);
-        setRandomUserData(res.data.results);
-        setRandomUserDataJSON(JSON.stringify(res, null, 3));  
-      })      
-    }, []
-  )
+    fetchNextUser()
+    }, [])
 
   return (
     <div>
-      <h2>
-        Code SandBox
-      </h2>
+      <h2>Code SandBox</h2>
+      <button onClick={fetchNextUser}>Fetch Next User</button>
       <p>
         {
           randomUserData.map((userInfo, idx) => ( 
-            <>    
-              <p>{getFullName(userInfo)}</p>
+            <div>    
               <img src = {userInfo.picture.thumbnail}/>
-            </>
+              {getFullName(userInfo)}              
+            </div>
           ))   
         }     
-      </p>       
-      <pre>
-        {
-          randomUserDataJSON
-        }
-      </pre>      
+      </p>                  
     </div>
   );
 }
