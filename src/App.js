@@ -42,8 +42,8 @@ function App() {
         {
           randomUserData.map((userInfo, idx) => ( 
             <div>    
-              <img src = {userInfo.picture.thumbnail}/>
-              {getFullName(userInfo)}              
+              <img src = {userInfo.picture.thumbnail} height='80px'/>
+              <p>{getFullName(userInfo)}</p>              
             </div>
           ))   
         }     
